@@ -1,14 +1,11 @@
 package Tools;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
-import java.util.Map;
 
 public class Download {
 
@@ -54,6 +51,16 @@ public class Download {
 		}
 	}
 
+	public boolean skipWith(int temp) {
+		try {
+			if (inputStream.skip(temp) == temp)
+				return true;
+		} catch (IOException e) {
+			return false;
+		}
+		return false;
+	}
+
 	public String getFileStringSize() {
 		return fileStringSize;
 	}
@@ -82,6 +89,13 @@ public class Download {
 	public void cancelDownload() {
 		// Cancel dwonload
 		setstatus(CANCEL);
+		try {
+			Thread.sleep(100);
+			cancel();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
 	}
 
 	public int getFileSize() {
@@ -139,7 +153,6 @@ public class Download {
 					.setRequestProperty(
 							"User-Agent",
 							"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.29 Safari/537.36");
-
 			return connection.getContentLength();
 		} catch (Exception e) {
 			status = ERROE;
@@ -161,10 +174,6 @@ public class Download {
 			done();
 		} else if (status == PAUSE)
 			pause();
-		else if (status == CANCEL) {
-			cancel();
-		}
-
 	}
 
 	private void pause() {

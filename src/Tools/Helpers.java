@@ -4,17 +4,17 @@ import java.io.File;
 
 public class Helpers {
 
-	public static boolean isValid(String url) {
-		if (url.contains("http://")) {
+	public static void test(String Message) {
+		System.out.println("test " + Message);
+	}
+
+	public static boolean isValidURL(String url) {
+		if (url.contains("http://") || url.contains("https://")) {
 			if (url.contains(".")) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public static void test(String Message) {
-		System.out.println("test " + Message);
 	}
 
 	public static String genrateName(String url) {

@@ -42,8 +42,7 @@ public class NewDownloadGUI extends JFrame implements ActionListener {
 		panel.add(urlLabel);
 		add(urlLabel);
 
-		urlField = new JTextField(
-				"http://ms2.sm3na.com/105/Sm3na_com_15511.mp3");
+		urlField = new JTextField();// "http://ms2.sm3na.com/105/Sm3na_com_15511.mp3" for test 
 		panel.add(urlField);
 		add(urlField);
 		urlField.setVisible(flag);
@@ -102,7 +101,7 @@ public class NewDownloadGUI extends JFrame implements ActionListener {
 		verify.addActionListener(this);
 
 		File currentDirectory = Helpers.getCurrentDirectory();
-		Helpers.test(currentDirectory.getPath());
+		//Helpers.test(currentDirectory.getPath());
 		fileChooser = new JFileChooser(currentDirectory);
 		// add(panel);
 	}
@@ -113,7 +112,7 @@ public class NewDownloadGUI extends JFrame implements ActionListener {
 			String url = urlField.getText();
 			// Helpers.test("verify Button");
 			if (url.length() != 0) {
-				if (Helpers.isValid(url)) {
+				if (Helpers.isValidURL(url)) {
 					setBounds((1300 - 500) / 2, (700 - 200) / 2, 500, 210);
 					boolean flag = false;
 					verify.setVisible(flag);
@@ -128,7 +127,7 @@ public class NewDownloadGUI extends JFrame implements ActionListener {
 					nameField.setText(Helpers.genrateName(url));
 				} else {
 					JOptionPane.showMessageDialog(this,
-							"You Should Enter Vaild URL", "Valid URL Missing",
+							"You Should Enter File URL", "Valid URL Missing",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			} else {
@@ -137,7 +136,7 @@ public class NewDownloadGUI extends JFrame implements ActionListener {
 						"URL Missing", JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (e.getSource() == ok) {
-			//Helpers.test("OK Button");
+			// Helpers.test("OK Button");
 			String url = urlField.getText();
 			String name = nameField.getText();
 			String path = destField.getText();
@@ -147,6 +146,7 @@ public class NewDownloadGUI extends JFrame implements ActionListener {
 					downloadGui = new DownloadGUI(download);
 					dispose();
 				} else {
+					download.cancelDownload();
 					ok.setEnabled(false);
 					JOptionPane.showMessageDialog(this, "Unexpected Error",
 							"Error", JOptionPane.ERROR_MESSAGE);
