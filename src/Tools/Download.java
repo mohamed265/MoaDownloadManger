@@ -1,4 +1,5 @@
 package Tools;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -20,22 +21,22 @@ public class Download {
 	final public static int ERROE = Integer.MIN_VALUE;
 
 	private String path, fileName, fileUrl, fileStringSize;
-	private int state, fileSize, progress;
+	private int status, fileSize, progress;
 	private File target;
 	private FileOutputStream fos;
 	private InputStream inputStream;
 	private URLConnection connection;
 
-	public Download(String path_, String fileName_, String url_, int state_) {
+	public Download(String path_, String fileName_, String url_, int status_) {
 		try {
 			path = path_;
-			fileName = "test" + fileName_;
+			fileName = fileName_;
 			fileUrl = url_;
-			state = state_;
+			status = status_;
 			fileSize = Init();
 			fileStringSize = getStringSize(fileSize);
-			System.out.println("The File Size Is " + fileSize + " byte");
-			switch (state) {
+			// Helpers.test("The File Size Is " + fileSize + " byte");
+			switch (status) {
 			case INTI:
 				fos = new FileOutputStream(path + fileName + ".TEMP");
 				inputStream = connection.getInputStream();
@@ -45,30 +46,42 @@ public class Download {
 			case PAUSE:
 				break;
 			default:
-				state = ERROE;
+				status = ERROE;
 				break;
 			}
 		} catch (Exception e) {
-			state = ERROE;
+			status = ERROE;
 		}
 	}
 
+	public String getFileStringSize() {
+		return fileStringSize;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public boolean hasError() {
+		return status == ERROE;
+	}
+
 	public boolean isRunning() {
-		return state == ACTIVE ? true : false;
+		return status == ACTIVE ? true : false;
 	}
 
 	public boolean isDone() {
-		return state == DONE ? true : false;
+		return status == DONE ? true : false;
 	}
 
 	public void pauseDownload() {
 		// pause dwonload
-		setState(PAUSE);
+		setstatus(PAUSE);
 	}
 
 	public void cancelDownload() {
 		// Cancel dwonload
-		setState(CANCEL);
+		setstatus(CANCEL);
 	}
 
 	public int getFileSize() {
@@ -93,7 +106,8 @@ public class Download {
 	}
 
 	public String getProgressPercentage() {
-		return (((float) progress / (float) fileSize) * 100) + "%";
+		return String.format("%.2f",
+				(((float) progress / (float) fileSize) * 100)) + "%";
 	}
 
 	public int getProgressValue() {
@@ -112,7 +126,7 @@ public class Download {
 	}
 
 	public void resumeDownload() {
-		setState(RESUME);
+		setstatus(RESUME);
 		resume();
 	}
 
@@ -128,14 +142,14 @@ public class Download {
 
 			return connection.getContentLength();
 		} catch (Exception e) {
-			state = ERROE;
+			status = ERROE;
 		}
 		return ERROE;
 	}
 
 	private void downloding() throws IOException {
 		int temp;
-		while (state == ACTIVE) {
+		while (status == ACTIVE) {
 			temp = downloadByte();
 			if (temp == -1 || temp == ERROE)
 				break;
@@ -143,11 +157,11 @@ public class Download {
 			progress++;
 			// System.out.println(progress);
 		}
-		if (state == ACTIVE) {
+		if (status == ACTIVE) {
 			done();
-		} else if (state == PAUSE)
+		} else if (status == PAUSE)
 			pause();
-		else if (state == CANCEL) {
+		else if (status == CANCEL) {
 			cancel();
 		}
 
@@ -158,7 +172,7 @@ public class Download {
 	}
 
 	private void resume() {
-		setState(ACTIVE);
+		setstatus(ACTIVE);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -182,7 +196,7 @@ public class Download {
 	private void done() {
 		try {
 			fos.close();
-			setState(DONE);
+			setstatus(DONE);
 			String name = target.getName().substring(0,
 					target.getName().lastIndexOf(".TEMP"));
 			File dest = new File(path + name);
@@ -192,15 +206,15 @@ public class Download {
 		}
 	}
 
-	private void setState(int state_) {
-		state = state_;
+	private void setstatus(int status_) {
+		status = status_;
 	}
 
 	private int downloadByte() {
 		try {
 			return inputStream.read();
 		} catch (IOException e) {
-			state = ERROE;
+			status = ERROE;
 		}
 		return ERROE;
 	}
@@ -209,23 +223,23 @@ public class Download {
 		try {
 			fos.write(temp);
 		} catch (IOException e) {
-			state = ERROE;
+			status = ERROE;
 		}
 	}
 
 }
-//public void startDownload() {
-	// setState(ACTIVE);
-	// new Thread(new Runnable() {
-	// @Override
-	// public void run() {
-	// try {
-	// downloding();
-	// } catch (Exception e) {
-	// }
-	// }
-	// }).start();
-	// }
+// public void startDownload() {
+// setstatus(ACTIVE);
+// new Thread(new Runnable() {
+// @Override
+// public void run() {
+// try {
+// downloding();
+// } catch (Exception e) {
+// }
+// }
+// }).start();
+// }
 // private static byte[] inputStreamToByteArray(InputStream inStream)
 // throws IOException {
 // ByteArrayOutputStream baos = new ByteArrayOutputStream();

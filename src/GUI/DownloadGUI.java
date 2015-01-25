@@ -1,4 +1,5 @@
 package GUI;
+
 import java.awt.Desktop;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
@@ -39,7 +40,7 @@ public class DownloadGUI extends JFrame implements ActionListener {
 		add(pb);
 
 		downloadButton = new JButton("Start");
-		downloadButton.setBounds(50, 65, 80, 30);
+		downloadButton.setBounds(50, 65, 100, 30);
 		downloadButton.setVisible(true);
 		downloadButton.addActionListener(this);
 		panel.add(downloadButton);
@@ -53,11 +54,13 @@ public class DownloadGUI extends JFrame implements ActionListener {
 		add(openlocation);
 
 		cancelButton = new JButton("Cancel");
-		cancelButton.setBounds(270, 65, 80, 30);
+		cancelButton.setBounds(250, 65, 100, 30);
 		cancelButton.setVisible(true);
 		cancelButton.addActionListener(this);
 		panel.add(cancelButton);
 		add(cancelButton);
+
+		pb.setString(download.getFileStringSize());
 
 		this.addWindowListener(new WindowAdapter() {
 			@Override
